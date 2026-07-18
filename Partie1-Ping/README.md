@@ -20,4 +20,4 @@ L'objectif de cette première phase est d'assurer la connectivité réseau de ba
    * Création d'une règle de trafic entrant dans le Pare-feu Windows avec fonctions avancées de sécurité pour autoriser spécifiquement : Partage de fichiers et d'imprimantes (Demande d'écho - Trafic entrant ICMPv4).
 
 ## Preuve de concept (Ping)
-*(Insère ta capture d'écran ici plus tard)*
+*![Ping Réussi](ping-succès.png)*
