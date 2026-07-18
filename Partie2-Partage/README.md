@@ -40,5 +40,12 @@ L'objectif de cette deuxième phase est de mettre en place un serveur de fichier
   1. Tentative d'écriture d'un fichier texte dans le dossier `Public` (Doit réussir).
   2. Tentative d'accès au dossier `Confidentiel` (Doit afficher un message "Accès refusé").
 
+## Dépannage (Troubleshooting)
+
+Lors de la mise en place, une erreur système 67 (*Lab_Share$*) est survenue lors de la tentative de connexion depuis la **VM-02**. La résolution a nécessité les étapes de validation suivantes sur la **VM-01** :
+
+* **Activation de la découverte réseau** : Le profil réseau a dû être configuré en *Privé* pour permettre l'activation du partage de fichiers et la découverte de réseau dans le Panneau de configuration.
+* **Validation de la syntaxe UNC** : Correction du nom de partage pour cibler exactement le partage masqué configuré (`Lab-Share$`).
+
 ## Preuve de concept
-*(Insère ici la capture d'écran montrant le dossier Public accessible avec ton fichier de test, côte à côte avec la fenêtre d'accès refusé du dossier Confidentiel)*
+![Validation des permissions SMB et NTFS](smb-permissions.png)
