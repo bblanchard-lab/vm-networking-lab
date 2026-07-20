@@ -1,40 +1,41 @@
-# Partie 1 : Validation de la Connectivité Réseau (Ping) et Sécurité ICMP
+## Partie 1 : Validation de la connectivité réseau (Ping) et configuration ICMP
 
-L'objectif de cette première phase est d'établir et de valider une connectivité réseau de base bidirectionnelle entre deux machines virtuelles Windows 10 isolées. Ce laboratoire permet de maîtriser l'isolation réseau dans un hyperviseur et la configuration précise du pare-feu Windows sans compromettre la sécurité globale du système.
+L'objectif de cette première phase est de configurer et de valider la connectivité réseau entre deux machines virtuelles (VM) Windows 10 complètement isolées dans un laboratoire. Ce lab permet de manipuler la segmentation réseau sur un hyperviseur et de configurer le pare-feu Windows proprement, sans désactiver les protections de sécurité par défaut.
 
-## Environnement de test
-* **Hyperviseur** : VMware Workstation PRO
-* **VM-01 (Machine A)** : Windows 10 | IP : 192.168.10.10 /24
-* **VM-02 (Machine B)** : Windows 10 | IP : 192.168.10.20 /24
+### Environnement de test
+* **Hyperviseur :** VMware Workstation Pro
+* **VM-01 (Machine A) :** Windows 10 | IP : `192.168.10.10/24`
+* **VM-02 (Machine B) :** Windows 10 | IP : `192.168.10.20/24`
 
-## Étapes de configuration
+---
 
-### 1. Isolation et segmentation réseau dans l'hyperviseur
-* Configuration d'un commutateur virtuel privé isolé (Host-Only / VMnet10) pour confiner le trafic à notre laboratoire.
-* Modification des paramètres matériels de chaque machine virtuelle : basculement de la carte réseau (NIC) du mode NAT/Bridged vers le profil réseau personnalisé `VMnet10`.
+### Étapes de configuration
 
-### 2. Plan d'adressage IP statique (Couche 3 du modèle OSI)
-* Accès aux connexions réseau via l'interface graphique ou la commande `ncpa.cpl`.
-* Configuration manuelle des propriétés du protocole Internet version 4 (TCP/IPv4) sur les interfaces réseau :
-  * **VM-01** : Adresse IP `192.168.10.10` | Masque de sous-réseau `255.255.255.0`.
-  * **VM-02** : Adresse IP `192.168.10.20` | Masque de sous-réseau `255.255.255.0`.
-* **Validation de l'interface** : Exécution de la commande `ipconfig` dans l'invite de commandes (CMD) de chaque VM pour valider la bonne application des paramètres IP.
+#### 1. Segmentation et isolation réseau sur l'hyperviseur
+* Configuration d'un commutateur virtuel privé et isolé (**LAN Segment** ou **Host-Only** via un VMnet dédié) pour bloquer tout trafic vers l'extérieur ou le réseau local physique.
+* Modification de la carte réseau (NIC) de chaque VM dans VMware pour basculer du mode NAT/Bridged vers notre profil réseau isolé.
 
-### 3. Analyse du comportement initial du pare-feu (Comportement par défaut)
-* **Test de connectivité initial** : Exécution d'une commande `ping 192.168.10.20` depuis la VM-01.
-* **Résultat attendu** : Échec du ping ("Délai d'attente de la demande dépassé").
-* **Analyse technique** : Par défaut, la stratégie de sécurité du Pare-feu Windows bloque toutes les requêtes ICMP (Internet Control Message Protocol) entrantes pour masquer la machine et la protéger contre la reconnaissance réseau.
+#### 2. Configuration des adresses IP statiques
+* Ouverture des connexions réseau avec la commande `ncpa.cpl`.
+* Configuration manuelle du protocole IPv4 sur les cartes réseau :
+    * **VM-01 :** IP `192.168.10.10` | Masque `255.255.255.0`
+    * **VM-02 :** IP `192.168.10.20` | Masque `255.255.255.0`
+* **Validation :** Exécution de la commande `ipconfig` dans l'invite de commandes (CMD) de chaque machine pour confirmer que les adresses sont bien appliquées.
 
-### 4. Durcissement et configuration de la sécurité (Pare-feu Windows)
-* Plutôt que de désactiver complètement le pare-feu (mauvaise pratique), ouverture de la console `wf.msc` (*Pare-feu Windows avec fonctions avancées de sécurité*).
-* Navigation dans la section **Règles de trafic entrant** (*Inbound Rules*).
-* Localisation et activation de la règle de sécurité native spécifique :
-  * **Nom de la règle** : `Partage de fichiers et d'imprimantes (Demande d'écho - Trafic entrant ICMPv4)`.
-  * **Action** : Autoriser le trafic pour les profils réseau appropriés (Privé/Domaine).
+#### 3. Comportement par défaut du pare-feu Windows
+* **Test initial :** Lancement d'un `ping 192.168.10.20` depuis la VM-01.
+* **Résultat :** Le ping échoue avec le message *"Délai d'attente de la demande dépassé"*.
+* **Pourquoi ça bloque :** Par défaut, le pare-feu Windows bloque toutes les requêtes ICMP (ping) entrantes. C'est une protection de base pour éviter qu'une machine soit visible ou scannée sur un réseau.
 
-### 5. Validation finale et preuve de concept
-* Réexécution de la commande `ping` bidirectionnelle entre la VM-01 et la VM-02.
-* Validation de la réception des 4 paquets d'écho ICMP avec un taux de perte de 0%.
+#### 4. Configuration sécurisée du pare-feu (Pas de désactivation complète)
+Désactiver complètement un pare-feu est une mauvaise pratique de sécurité. À la place, la règle a été ciblée précisément :
+* Ouverture du pare-feu avancé avec la commande `wf.msc`.
+* Dans la section **Règles de trafic entrant (Inbound Rules)**, localisation et activation de la règle native suivante :
+    * **Nom de la règle :** *Partage de fichiers et d'imprimantes (Demande d'écho - Trafic entrant ICMPv4)*
+    * **Action :** Autoriser la règle uniquement pour le profil réseau approprié (Privé).
 
-## Preuve de concept (Ping)
-![Ping Réussi](ping-succès.png)
+#### 5. Validation finale et preuves de succès
+* Réexécution du ping entre la VM-01 et la VM-02 dans les deux sens.
+* Le trafic passe désormais correctement avec 0% de perte de paquets.
+
+![Preuve photo - Succès du Ping](./images/Ping-Succes.png)
