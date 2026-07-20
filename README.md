@@ -1,5 +1,5 @@
 # vm-networking-lab
-Lab d'interconnexion réseau et de partage de fichiers entre deux machines virtuelles.
+Laboratoire d'interconnexion réseau et de partage de fichiers entre deux machines virtuelles.
 
 ## Sommaire des manipulations
 * [Partie 1 : Validation de la Connectivité (Ping)](./Partie1-Ping/README.md)
